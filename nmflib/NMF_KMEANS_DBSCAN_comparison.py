@@ -201,32 +201,34 @@ def test_nmf(X, n_components):
 
 def main():
     # generate test data
-    n_samples = 10000
-    n_components=10
+    n_samples = 100000
+    n_components=50
     n_features=20
-    K = 10
+    K = 50
     input_data, labels = datasets.make_blobs(n_samples=n_samples, centers=n_components, cluster_std=0.5, n_features=n_features, random_state=6) #random_state=8,
 
     normed_data = normalize_features2(input_data)
     normed_data += math.fabs(normed_data.min())
     print input_data.shape
 
+    np.savetxt("test_data_100000_50k.csv", np.c_[normed_data, labels], delimiter=",", fmt="%f")
+
     dbscan_labels, dbscan_centres = test_dbscan(normed_data)
-    #print "end dbscan"
+    print "end dbscan"
     kmeans_labels, kmeans_centres = test_kmeans(normed_data, K)
     print "end kmeans"
-    normed_data2 = np.array(normed_data, copy=True)
-    nmf_labels, nmf_centres, W, H = test_nmf(normed_data2, K)
-    print "end nmf"
+    #normed_data2 = np.array(normed_data, copy=True)
+    #nmf_labels, nmf_centres, W, H = test_nmf(normed_data2, K)
+    #print "end nmf"
 
     pca, X = run_pca_with_variance(normed_data, num_princomps=2)
 
     pca_kmeans_centres = pca.transform(kmeans_centres)
-    pca_nmf_centres = pca.transform(nmf_centres)
+    #pca_nmf_centres = pca.transform(nmf_centres)
     pca_dbscan_centres = pca.transform(dbscan_centres)
 
     plot_scatter2d(X, kmeans_labels, pca_kmeans_centres, n_components, "Mini-batch KMeans visualisation", save_fig=True, fig_file_name='pca_kmeans.pdf')  # plot the data in a scatter graph
-    plot_scatter2d(X, nmf_labels, pca_nmf_centres, n_components, "NMF visualisation", save_fig=True, fig_file_name='pca_nmf.pdf')  # plot the data in a scatter graph
+    #plot_scatter2d(X, nmf_labels, pca_nmf_centres, n_components, "NMF visualisation", save_fig=True, fig_file_name='pca_nmf.pdf')  # plot the data in a scatter graph
     plot_scatter2d(X, dbscan_labels, pca_dbscan_centres, n_components, "DBSCAN visualisation", save_fig=True, fig_file_name='pca_dbscan.pdf')  # plot the data in a scatter graph
 
     # FAST NMF LIbarary -- also spark
